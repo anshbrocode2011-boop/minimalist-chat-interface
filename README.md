@@ -1,26 +1,40 @@
-# Minimalist Chat Interface
+# Baat — combined frontend and backend deployment
 
-@connector:github:"GitHub API" anshbrocode2011-boop/Baat
+This repository now contains the Baat API in `backend/` and the premium chat frontend in the repository root.
 
-Make the whole frontend very minimal premium like lovable
+## Render deployment
 
-This project was built with [Lovable](https://lovable.dev).
+Use the included `render.yaml` blueprint. Before deploying, replace these two placeholders with your actual Render service URLs:
 
-## Build with Lovable
+- `YOUR-FRONTEND-SERVICE.onrender.com` in `CLIENT_ORIGIN`
+- `YOUR-BAAT-API-SERVICE.onrender.com` in `VITE_API_BASE_URL`
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/054d0c1c-5c84-4887-a7fc-26d6f9e7590a).
+Render will provide `DATABASE_URL` from the managed PostgreSQL database and generate `JWT_SECRET` automatically. The frontend API URL is a build-time variable, so set it in Render before the frontend build runs.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## Database initialization
 
-## Development
+After the PostgreSQL database is created, run `backend/schema.sql` once against it. For example:
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+```bash
+psql "$DATABASE_URL" -f backend/schema.sql
+```
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+## Local development
+
+Terminal 1:
+
+```bash
+cd backend
+npm install
+cp .env.example .env
 npm run dev
 ```
+
+Terminal 2:
+
+```bash
+npm install
+VITE_API_BASE_URL=http://localhost:3000 npm run dev
+```
+
+The frontend API client is in `src/lib/baat-api.ts`. Never commit real database credentials or JWT secrets.

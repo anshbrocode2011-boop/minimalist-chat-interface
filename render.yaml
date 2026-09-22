@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: baat-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: baat-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        value: https://YOUR-FRONTEND-SERVICE.onrender.com
+  - type: web
+    name: baat-frontend
+    runtime: node
+    buildCommand: npm ci && npm run build
+    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://YOUR-BAAT-API-SERVICE.onrender.com
+databases:
+  - name: baat-db
+    databaseName: baat
+    user: baat
