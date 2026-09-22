@@ -14,7 +14,6 @@ import {
   Sparkles,
   UserRound,
   UsersRound,
-  X,
 } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
@@ -171,7 +170,7 @@ function Workspace({ onLogout }: { onLogout: () => void }) {
           ) : view === "chats" ? (
             <ChatsView onOpen={setActive} onNew={() => switchView("people")} />
           ) : view === "people" ? (
-            <PeopleView query={query} setQuery={setQuery} people={filteredPeople} onOpen={(person) => setActive({ id: 20, preview: "", time: "", online: true, ...person })} />
+            <PeopleView query={query} setQuery={setQuery} results={filteredPeople} onOpen={(person) => setActive({ id: 20, preview: "", time: "", online: true, ...person })} />
           ) : (
             <ProfileView copied={copied} onCopy={copyId} onLogout={onLogout} />
           )}
