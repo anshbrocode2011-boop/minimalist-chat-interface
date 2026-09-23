@@ -1,19 +1,39 @@
-# Baat — combined frontend and backend deployment
+# Baat — single-service full-stack deployment
 
-This repository now contains the Baat API in `backend/` and the premium chat frontend in the repository root.
+This repository contains the existing Baat Vite/TanStack frontend and Express/PostgreSQL backend in one deployable application.
 
-## Render deployment
+## Architecture
 
-Use the included `render.yaml` blueprint. Before deploying, replace these two placeholders with your actual Render service URLs:
+```text
+Browser → one Render Web Service (Express API + built frontend) → Render PostgreSQL
+```
 
-- `YOUR-FRONTEND-SERVICE.onrender.com` in `CLIENT_ORIGIN`
-- `YOUR-BAAT-API-SERVICE.onrender.com` in `VITE_API_BASE_URL`
+The frontend is built from the repository root. The backend in `backend/` serves the generated frontend files and handles `/api/*`, `/health`, and `/ws` on the same origin. Production requests therefore use relative `/api/...` URLs; no separate frontend or backend service is required.
 
-Render will provide `DATABASE_URL` from the managed PostgreSQL database and generate `JWT_SECRET` automatically. The frontend API URL is a build-time variable, so set it in Render before the frontend build runs.
+## Render
 
-## Database initialization
+The included `render.yaml` defines exactly one web service named `baat` and one PostgreSQL database named `baat-db`.
 
-After the PostgreSQL database is created, run `backend/schema.sql` once against it. For example:
+Build command:
+
+```bash
+npm install && npm run install:backend && npm run build && npm run build:backend
+```
+
+Start command:
+
+```bash
+npm start
+```
+
+Required environment variables:
+
+- `DATABASE_URL` — supplied by the Render PostgreSQL database.
+- `JWT_SECRET` — a long random secret; do not commit it.
+- `CLIENT_ORIGIN` — the single Render service URL, for example `https://baat.onrender.com`.
+- `PORT` — Render supplies this automatically; the server respects it. You may leave it unset.
+
+The backend initializes `backend/schema.sql` safely at startup with `CREATE TABLE IF NOT EXISTS`. If you prefer manual initialization, run:
 
 ```bash
 psql "$DATABASE_URL" -f backend/schema.sql
@@ -21,20 +41,17 @@ psql "$DATABASE_URL" -f backend/schema.sql
 
 ## Local development
 
-Terminal 1:
+Create `backend/.env` from `backend/.env.example`, set `DATABASE_URL` and `JWT_SECRET`, then run the backend and frontend separately:
 
 ```bash
-cd backend
-npm install
-cp .env.example .env
-npm run dev
+cd backend && npm install && npm run dev
 ```
 
-Terminal 2:
+In another terminal:
 
 ```bash
 npm install
 VITE_API_BASE_URL=http://localhost:3000 npm run dev
 ```
 
-The frontend API client is in `src/lib/baat-api.ts`. Never commit real database credentials or JWT secrets.
+In production, do not set `VITE_API_BASE_URL`; the client uses the same origin. The API client stores the JWT session locally and sends it on authenticated requests. WebSocket connections remain available at `/ws?token=...` on the same service.
