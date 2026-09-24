@@ -15,6 +15,8 @@ services:
         generateValue: true
       - key: CLIENT_ORIGIN
         value: https://baat.onrender.com
+      - key: FRONTEND_DIR
+        value: .output/public
 
 databases:
   - name: baat-db
