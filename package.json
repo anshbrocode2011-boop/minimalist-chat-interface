@@ -5,18 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && npm run install:backend && npm run build:backend",
+    "build": "vite build && npm run build:backend",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "postinstall": "npm run install:backend && npm run build:backend",
     "install:backend": "npm install --prefix backend",
     "build:backend": "npm run build --prefix backend",
-    "start": "npm run start --prefix backend"
+    "start": "node backend/dist/server.js"
   },
-  "overrides": {
-    "rolldown": "1.2.1"
-  },
+  "overrides": { "rolldown": "1.2.1" },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
