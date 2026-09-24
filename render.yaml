@@ -3,7 +3,7 @@ services:
     name: baat
     runtime: node
     rootDir: .
-    buildCommand: npm install && npm run install:backend && npm run build && npm run build:backend
+    buildCommand: npm install && npm run install:backend && npm run build
     startCommand: npm start
     healthCheckPath: /health
     envVars:
