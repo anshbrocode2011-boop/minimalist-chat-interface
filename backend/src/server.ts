@@ -26,8 +26,16 @@ const clients = new Map<string, Set<WebSocket>>();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const backendDir = path.resolve(__dirname, "..");
 const rootDir = path.resolve(backendDir, "..");
-const frontendDir = path.resolve(rootDir, "dist");
+const frontendCandidates = [
+  process.env.FRONTEND_DIR ? path.resolve(rootDir, process.env.FRONTEND_DIR) : null,
+  path.resolve(rootDir, "dist"),
+  path.resolve(rootDir, ".output/public"),
+  path.resolve(rootDir, "build"),
+].filter((directory): directory is string => Boolean(directory));
+const frontendDir = frontendCandidates.find((directory) => fs.existsSync(path.join(directory, "index.html"))) ?? frontendCandidates[0];
 const schemaPath = path.resolve(backendDir, "schema.sql");
+
+console.log(`Frontend directory: ${frontendDir}`);
 
 type Identity = { id: string; chatId: string };
 type AuthRequest = Request & { user?: Identity };
