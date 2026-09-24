@@ -14,7 +14,9 @@
     "build:backend": "npm run build --prefix backend",
     "start": "npm run start --prefix backend"
   },
-  "overrides": { "rolldown": "1.2.1" },
+  "overrides": {
+    "rolldown": "1.2.1"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
